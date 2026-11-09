@@ -1,0 +1,9 @@
+bin/
+obj/
+.vs/
+.vscode/
+*.user
+VaiEVolta/chaves/
+VaiEVolta/wwwroot/uploads/*
+!VaiEVolta/wwwroot/uploads/.gitkeep
+.env

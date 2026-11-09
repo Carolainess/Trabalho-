@@ -1,0 +1,27 @@
+# ============================================================
+#  Publicação na nuvem (Render.com) — "Blueprint"
+#  No painel do Render: New > Blueprint > escolha o repositório.
+#  Ele cria sozinho o PostgreSQL e o site, e liga um no outro.
+# ============================================================
+databases:
+  - name: vaievolta-banco
+    plan: free
+    databaseName: vaievolta
+    user: vaievolta
+
+services:
+  - type: web
+    name: vaievolta
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: TZ
+        value: America/Sao_Paulo
+      - key: DATABASE_URL          # o Program.cs lê esta variável e monta a conexão
+        fromDatabase:
+          name: vaievolta-banco
+          property: connectionString

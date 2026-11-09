@@ -1,0 +1,10 @@
+**/bin
+**/obj
+**/.vs
+**/.vscode
+**/chaves
+**/wwwroot/uploads/*
+!**/wwwroot/uploads/.gitkeep
+docs
+*.md
+.git

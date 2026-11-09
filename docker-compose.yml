@@ -1,0 +1,46 @@
+# ============================================================
+#  Sobe a aplicação + o PostgreSQL com um comando:
+#      docker compose up --build
+#  Depois acesse http://localhost:8080
+# ============================================================
+services:
+
+  banco:
+    image: postgres:16-alpine
+    container_name: vaievolta-banco
+    environment:
+      POSTGRES_DB: vaievolta
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      TZ: America/Sao_Paulo
+    ports:
+      - "5432:5432"            # opcional: para abrir o banco no pgAdmin/DBeaver
+    volumes:
+      - dados-postgres:/var/lib/postgresql/data
+    healthcheck:               # a aplicação só sobe quando o banco estiver pronto
+      test: ["CMD-SHELL", "pg_isready -U postgres -d vaievolta"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: vaievolta-app
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Padrao: "Host=banco;Port=5432;Database=vaievolta;Username=postgres;Password=postgres"
+      TZ: America/Sao_Paulo
+    ports:
+      - "8080:8080"
+    depends_on:
+      banco:
+        condition: service_healthy
+    volumes:
+      - fotos:/app/wwwroot/uploads   # fotos enviadas não somem ao recriar o contêiner
+      - chaves:/app/chaves           # login continua válido depois de reiniciar
+    restart: unless-stopped
+
+volumes:
+  dados-postgres:
+  fotos:
+  chaves:
